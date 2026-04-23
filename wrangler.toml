@@ -9,4 +9,4 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "noteapp-db"
-database_id = "PLACEHOLDER_DB_ID"
+database_id = "366980e4-4ada-4adc-84f5-a1089da3b668"
