@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>noteapp</title>
+    <style>
+      :root {
+        --bg: #fafaf7;
+        --fg: #1a1a1a;
+        --muted: #666;
+        --border: #e2e2dc;
+        --accent: #2563eb;
+        --accent-hover: #1d4ed8;
+        --danger: #dc2626;
+        --card: #fff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.5;
+      }
+      header {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 0.9rem 1.2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
+      main { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+      .hidden { display: none !important; }
+
+      .auth-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+      }
+      .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        background: none;
+        border: none;
+        padding: 0.6rem 0.2rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+        color: var(--muted);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+      }
+      .tab.active { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+
+      form { display: flex; flex-direction: column; gap: 0.75rem; }
+      label { font-size: 0.85rem; color: var(--muted); }
+      input, textarea {
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font: inherit;
+        background: #fff;
+        color: var(--fg);
+      }
+      textarea { min-height: 110px; resize: vertical; font-family: inherit; }
+      input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+
+      button {
+        padding: 0.65rem 1rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--fg);
+        font: inherit;
+        cursor: pointer;
+      }
+      button:hover { background: #f3f3ee; }
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+      button.danger { color: var(--danger); }
+      button.danger:hover { background: #fef2f2; }
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+      .error { color: var(--danger); font-size: 0.9rem; min-height: 1.2em; }
+      .muted { color: var(--muted); font-size: 0.9rem; }
+
+      .note-composer {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+      .note-composer h2 { margin: 0 0 0.75rem; font-size: 1rem; }
+
+      .notes-list { display: flex; flex-direction: column; gap: 0.75rem; }
+      .note {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+      }
+      .note-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .note-title { margin: 0; font-size: 1.05rem; word-break: break-word; }
+      .note-body { margin: 0.4rem 0 0.6rem; white-space: pre-wrap; word-break: break-word; }
+      .note-meta { font-size: 0.8rem; color: var(--muted); }
+      .note-actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
+      .note-actions button { padding: 0.35rem 0.65rem; font-size: 0.85rem; }
+
+      .row { display: flex; gap: 0.5rem; align-items: center; }
+      .spacer { flex: 1; }
+
+      @media (max-width: 480px) {
+        header { padding: 0.8rem 1rem; }
+        main { padding: 1rem 0.8rem 4rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🗒️ noteapp</h1>
+      <div id="user-badge" class="hidden row">
+        <span id="user-email" class="muted"></span>
+        <button id="logout-btn">Sign out</button>
+      </div>
+    </header>
+    <main>
+      <!-- Signed-out view -->
+      <section id="auth-view" class="auth-card">
+        <div class="tabs">
+          <button class="tab active" data-tab="signin">Sign in</button>
+          <button class="tab" data-tab="signup">Sign up</button>
+        </div>
+        <form id="auth-form" autocomplete="on">
+          <div>
+            <label for="auth-email">Email</label>
+            <input id="auth-email" type="email" required autocomplete="email" />
+          </div>
+          <div>
+            <label for="auth-password">Password</label>
+            <input id="auth-password" type="password" required minlength="8" autocomplete="current-password" />
+          </div>
+          <div class="row">
+            <button type="submit" class="primary" id="auth-submit">Sign in</button>
+            <span class="spacer"></span>
+            <span id="auth-error" class="error"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Signed-in view -->
+      <section id="notes-view" class="hidden">
+        <div class="note-composer">
+          <h2 id="composer-title">New note</h2>
+          <form id="note-form">
+            <input id="note-title" type="text" placeholder="Title" required maxlength="200" />
+            <textarea id="note-body" placeholder="Write something..."></textarea>
+            <div class="row">
+              <button type="submit" class="primary" id="note-submit">Save note</button>
+              <button type="button" id="note-cancel" class="hidden">Cancel</button>
+              <span class="spacer"></span>
+              <span id="note-error" class="error"></span>
+            </div>
+          </form>
+        </div>
+        <div id="notes-list" class="notes-list"></div>
+        <p id="notes-empty" class="muted hidden">No notes yet. Write your first one above.</p>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
